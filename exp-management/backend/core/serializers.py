@@ -1,94 +1,27 @@
 from rest_framework import serializers
 from .models import Employee, Transaction, Project, Customer, Asset
 
-class EmployeeSerializer(serializers.Serializer):
-    id = serializers.CharField(read_only=True)
-    name = serializers.CharField(max_length=100)
-    email = serializers.EmailField()
-    position = serializers.CharField(max_length=100)
-    department = serializers.CharField(max_length=100)
-    created_at = serializers.DateTimeField(read_only=True)
+class EmployeeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Employee
+        fields = ['id', 'name', 'email', 'position', 'department', 'created_at']
 
-    def create(self, validated_data):
-        return Employee.objects.create(**validated_data)
+class TransactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transaction
+        fields = ['id', 'date', 'description', 'amount', 'type', 'category', 'created_at']
 
-    def update(self, instance, validated_data):
-        for key, value in validated_data.items():
-            setattr(instance, key, value)
-        instance.save()
-        return instance
+class ProjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Project
+        fields = ['id', 'name', 'description', 'client', 'status', 'start_date', 'end_date', 'progress', 'created_at']
 
-class TransactionSerializer(serializers.Serializer):
-    id = serializers.CharField(read_only=True)
-    date = serializers.DateField()
-    description = serializers.CharField(max_length=200)
-    amount = serializers.DecimalField(max_digits=10, decimal_places=2)
-    type = serializers.ChoiceField(choices=['income', 'expense'])
-    category = serializers.CharField(max_length=100)
-    created_at = serializers.DateTimeField(read_only=True)
+class CustomerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Customer
+        fields = ['id', 'name', 'email', 'phone', 'company', 'status', 'created_at']
 
-    def create(self, validated_data):
-        return Transaction.objects.create(**validated_data)
-
-    def update(self, instance, validated_data):
-        for key, value in validated_data.items():
-            setattr(instance, key, value)
-        instance.save()
-        return instance
-
-class ProjectSerializer(serializers.Serializer):
-    id = serializers.CharField(read_only=True)
-    name = serializers.CharField(max_length=100)
-    description = serializers.CharField(required=False, allow_blank=True)
-    client = serializers.CharField(max_length=100)
-    status = serializers.ChoiceField(choices=['planning', 'active', 'completed', 'cancelled'])
-    start_date = serializers.DateField(required=False, allow_null=True)
-    end_date = serializers.DateField(required=False, allow_null=True)
-    progress = serializers.IntegerField(min_value=0, max_value=100, default=0)
-    created_at = serializers.DateTimeField(read_only=True)
-
-    def create(self, validated_data):
-        return Project.objects.create(**validated_data)
-
-    def update(self, instance, validated_data):
-        for key, value in validated_data.items():
-            setattr(instance, key, value)
-        instance.save()
-        return instance
-
-class CustomerSerializer(serializers.Serializer):
-    id = serializers.CharField(read_only=True)
-    name = serializers.CharField(max_length=100)
-    email = serializers.EmailField()
-    phone = serializers.CharField(max_length=20, required=False, allow_blank=True)
-    company = serializers.CharField(max_length=100, required=False, allow_blank=True)
-    status = serializers.ChoiceField(choices=['lead', 'prospect', 'customer', 'inactive'])
-    created_at = serializers.DateTimeField(read_only=True)
-
-    def create(self, validated_data):
-        return Customer.objects.create(**validated_data)
-
-    def update(self, instance, validated_data):
-        for key, value in validated_data.items():
-            setattr(instance, key, value)
-        instance.save()
-        return instance
-
-class AssetSerializer(serializers.Serializer):
-    id = serializers.CharField(read_only=True)
-    name = serializers.CharField(max_length=100)
-    description = serializers.CharField(required=False, allow_blank=True)
-    category = serializers.ChoiceField(choices=['equipment', 'furniture', 'vehicle', 'software', 'other'])
-    value = serializers.DecimalField(max_digits=10, decimal_places=2)
-    status = serializers.ChoiceField(choices=['active', 'maintenance', 'retired', 'disposed'])
-    location = serializers.CharField(max_length=100, required=False, allow_blank=True)
-    created_at = serializers.DateTimeField(read_only=True)
-
-    def create(self, validated_data):
-        return Asset.objects.create(**validated_data)
-
-    def update(self, instance, validated_data):
-        for key, value in validated_data.items():
-            setattr(instance, key, value)
-        instance.save()
-        return instance
+class AssetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Asset
+        fields = ['id', 'name', 'description', 'category', 'value', 'status', 'location', 'created_at']

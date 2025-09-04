@@ -1,63 +1,91 @@
-from mongoengine import Document, StringField, EmailField, DateTimeField, IntField, DecimalField, DateField
-from datetime import datetime
+from django.db import models
 
-class Employee(Document):
-    name = StringField(max_length=100, required=True)
-    email = EmailField(required=True)
-    position = StringField(max_length=100, required=True)
-    department = StringField(max_length=100, required=True)
-    created_at = DateTimeField(default=datetime.utcnow)
+class Employee(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    position = models.CharField(max_length=100)
+    department = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
     
-    meta = {'collection': 'employees'}
+    def __str__(self):
+        return f"{self.name} - {self.position}"
 
-class Transaction(Document):
-    TYPE_CHOICES = ['income', 'expense']
+class Transaction(models.Model):
+    TYPE_CHOICES = [
+        ('income', 'Income'),
+        ('expense', 'Expense'),
+    ]
     
-    date = DateField(required=True)
-    description = StringField(max_length=200, required=True)
-    amount = DecimalField(min_value=0, precision=2, required=True)
-    type = StringField(max_length=10, choices=TYPE_CHOICES, required=True)
-    category = StringField(max_length=100, required=True)
-    created_at = DateTimeField(default=datetime.utcnow)
+    date = models.DateField()
+    description = models.CharField(max_length=200)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    type = models.CharField(max_length=10, choices=TYPE_CHOICES)
+    category = models.CharField(max_length=100)
+    created_at = models.DateTimeField(auto_now_add=True)
     
-    meta = {'collection': 'transactions'}
+    def __str__(self):
+        return f"{self.description} - {self.amount}"
 
-class Project(Document):
-    STATUS_CHOICES = ['planning', 'active', 'completed', 'cancelled']
+class Project(models.Model):
+    STATUS_CHOICES = [
+        ('planning', 'Planning'),
+        ('active', 'Active'),
+        ('completed', 'Completed'),
+        ('cancelled', 'Cancelled'),
+    ]
     
-    name = StringField(max_length=100, required=True)
-    description = StringField()
-    client = StringField(max_length=100, required=True)
-    status = StringField(max_length=20, choices=STATUS_CHOICES, required=True)
-    start_date = DateField()
-    end_date = DateField()
-    progress = IntField(min_value=0, max_value=100, default=0)
-    created_at = DateTimeField(default=datetime.utcnow)
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
+    client = models.CharField(max_length=100)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES)
+    start_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True)
+    progress = models.IntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
     
-    meta = {'collection': 'projects'}
+    def __str__(self):
+        return f"{self.name} - {self.client}"
 
-class Customer(Document):
-    STATUS_CHOICES = ['lead', 'prospect', 'customer', 'inactive']
+class Customer(models.Model):
+    STATUS_CHOICES = [
+        ('lead', 'Lead'),
+        ('prospect', 'Prospect'),
+        ('customer', 'Customer'),
+        ('inactive', 'Inactive'),
+    ]
     
-    name = StringField(max_length=100, required=True)
-    email = EmailField(required=True)
-    phone = StringField(max_length=20)
-    company = StringField(max_length=100)
-    status = StringField(max_length=20, choices=STATUS_CHOICES, required=True)
-    created_at = DateTimeField(default=datetime.utcnow)
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    phone = models.CharField(max_length=20, blank=True)
+    company = models.CharField(max_length=100, blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES)
+    created_at = models.DateTimeField(auto_now_add=True)
     
-    meta = {'collection': 'customers'}
+    def __str__(self):
+        return f"{self.name} - {self.company}"
 
-class Asset(Document):
-    CATEGORY_CHOICES = ['equipment', 'furniture', 'vehicle', 'software', 'other']
-    STATUS_CHOICES = ['active', 'maintenance', 'retired', 'disposed']
+class Asset(models.Model):
+    CATEGORY_CHOICES = [
+        ('equipment', 'Equipment'),
+        ('furniture', 'Furniture'),
+        ('vehicle', 'Vehicle'),
+        ('software', 'Software'),
+        ('other', 'Other'),
+    ]
+    STATUS_CHOICES = [
+        ('active', 'Active'),
+        ('maintenance', 'Maintenance'),
+        ('retired', 'Retired'),
+        ('disposed', 'Disposed'),
+    ]
     
-    name = StringField(max_length=100, required=True)
-    description = StringField()
-    category = StringField(max_length=20, choices=CATEGORY_CHOICES, required=True)
-    value = DecimalField(min_value=0, precision=2, required=True)
-    status = StringField(max_length=20, choices=STATUS_CHOICES, required=True)
-    location = StringField(max_length=100)
-    created_at = DateTimeField(default=datetime.utcnow)
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
+    value = models.DecimalField(max_digits=10, decimal_places=2)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES)
+    location = models.CharField(max_length=100, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
     
-    meta = {'collection': 'assets'}
+    def __str__(self):
+        return f"{self.name} - {self.category}"

@@ -1,7 +1,6 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
-import mongoengine
 
 load_dotenv()
 
@@ -63,13 +62,6 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
-
-MONGODB_URI = os.getenv('MONGODB_URI', 'mongodb://mongodb:27017/exp_management')
-
-try:
-    mongoengine.connect(host=MONGODB_URI)
-except Exception as e:
-    print(f"MongoDB connection error: {e}")
 
 AUTH_PASSWORD_VALIDATORS = [
     {
