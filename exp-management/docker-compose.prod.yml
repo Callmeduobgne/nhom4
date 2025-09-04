@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:7.0
+    environment:
+      MONGO_INITDB_DATABASE: exp_management
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - exp-network
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/test --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    environment:
+      MONGODB_URI: mongodb://mongodb:27017/exp_management
+      DJANGO_SETTINGS_MODULE: exp_management.settings_prod
+    ports:
+      - "8000:8000"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    networks:
+      - exp-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - exp-network
+    restart: unless-stopped
+
+volumes:
+  mongodb_data:
+
+
+networks:
+  exp-network:
+    driver: bridge
