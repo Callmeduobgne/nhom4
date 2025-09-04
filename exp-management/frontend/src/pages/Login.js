@@ -6,28 +6,16 @@ import { useAuth } from '../contexts/AuthContext';
 
 const Login = () => {
     const navigate = useNavigate();
-    const { login } = useAuth();
+    const { login, loading } = useAuth();
 
-    const onFinish = (values) => {
-        // Mock login - replace with actual API call
-        if (values.username === 'admin' && values.password === 'admin123') {
-            login({
-                username: values.username,
-                role: 'admin',
-                name: 'Admin User'
-            });
-            message.success('Đăng nhập thành công!');
-            navigate('/');
-        } else if (values.username === 'user' && values.password === 'user123') {
-            login({
-                username: values.username,
-                role: 'user',
-                name: 'Normal User'
-            });
+    const onFinish = async (values) => {
+        const result = await login(values.username, values.password);
+        
+        if (result.success) {
             message.success('Đăng nhập thành công!');
             navigate('/');
         } else {
-            message.error('Tên đăng nhập hoặc mật khẩu không đúng!');
+            message.error(result.error || 'Đăng nhập thất bại');
         }
     };
 
@@ -82,6 +70,7 @@ const Login = () => {
                         <Button
                             type="primary"
                             htmlType="submit"
+                            loading={loading}
                             style={{
                                 width: '100%',
                                 height: '40px',

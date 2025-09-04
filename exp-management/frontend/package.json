@@ -12,10 +12,16 @@
     },
     "scripts": {
         "start": "react-scripts start",
-        "build": "react-scripts build"
+        "build": "react-scripts build",
+        "lint": "eslint src --ext .js,.jsx",
+        "lint:fix": "eslint src --ext .js,.jsx --fix",
+        "format": "prettier --write src/**/*.{js,jsx,css}"
     },
     "devDependencies": {
-        "react-scripts": "5.0.1"
+        "react-scripts": "5.0.1",
+        "eslint": "^8.57.0",
+        "eslint-config-react-app": "^7.0.1",
+        "prettier": "^3.0.0"
     },
     "browserslist": {
         "production": [
