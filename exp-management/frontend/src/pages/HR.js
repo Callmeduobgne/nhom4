@@ -6,7 +6,7 @@ import useApiData from '../hooks/useApiData';
 const { Option } = Select;
 
 function HR() {
-    const { data, loading, addRecord, updateRecord, deleteRecord } = useApiData('/employees/');
+    const { data, loading, pagination, addRecord, updateRecord, deleteRecord, fetchPage } = useApiData('/employees/');
 
     const columns = [
         {
@@ -112,6 +112,8 @@ function HR() {
             loading={loading}
             title="Quản lý Nhân sự"
             description="Quản lý thông tin nhân viên, chức vụ và phòng ban trong công ty"
+            pagination={pagination}
+            onPageChange={fetchPage}
         />
     );
 }

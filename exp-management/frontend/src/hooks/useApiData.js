@@ -4,15 +4,35 @@ import api from '../services/api';
 function useApiData(endpoint) {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [pagination, setPagination] = useState({
+        count: 0,
+        next: null,
+        previous: null
+    });
 
-    const fetchData = async () => {
+    const fetchData = async (page = 1) => {
         setLoading(true);
         try {
-            const response = await api.get(endpoint);
-            setData(response || []);
+            const url = `${endpoint}${endpoint.includes('?') ? '&' : '?'}page=${page}`;
+            const response = await api.get(url);
+            
+            // Handle paginated response
+            if (response && response.results) {
+                setData(response.results);
+                setPagination({
+                    count: response.count || 0,
+                    next: response.next,
+                    previous: response.previous
+                });
+            } else {
+                // Fallback for non-paginated response
+                setData(response || []);
+                setPagination({ count: (response || []).length, next: null, previous: null });
+            }
         } catch (error) {
             console.error(`Error fetching ${endpoint}:`, error);
-            setData([]); // Set empty array on error to prevent crashes
+            setData([]);
+            setPagination({ count: 0, next: null, previous: null });
         } finally {
             setLoading(false);
         }
@@ -55,10 +75,12 @@ function useApiData(endpoint) {
     return {
         data,
         loading,
+        pagination,
         addRecord,
         updateRecord,
         deleteRecord,
-        refetch: fetchData
+        refetch: fetchData,
+        fetchPage: fetchData
     };
 }
 

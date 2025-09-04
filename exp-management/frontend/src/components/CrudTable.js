@@ -32,7 +32,9 @@ function CrudTable({
     formFields,
     loading,
     title,
-    description
+    description,
+    pagination,
+    onPageChange
 }) {
     const [visible, setVisible] = useState(false);
     const [editingRecord, setEditingRecord] = useState(null);
@@ -204,7 +206,16 @@ function CrudTable({
                         rowKey="id"
                         loading={loading}
                         scroll={{ x: 800 }}
-                        pagination={{
+                        pagination={pagination ? {
+                            current: Math.ceil((pagination.count - (pagination.next ? 20 : data.length)) / 20) + 1,
+                            total: pagination.count,
+                            pageSize: 20,
+                            showSizeChanger: false,
+                            showQuickJumper: true,
+                            showTotal: (total, range) =>
+                                `${range[0]}-${range[1]} của ${total} mục`,
+                            onChange: onPageChange
+                        } : {
                             pageSize: 10,
                             showSizeChanger: true,
                             showQuickJumper: true,

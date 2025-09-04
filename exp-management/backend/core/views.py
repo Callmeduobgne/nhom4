@@ -1,5 +1,6 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
+from rest_framework.pagination import PageNumberPagination
 from .models import Employee, Transaction, Project, Customer, Asset
 from .serializers import (
     EmployeeSerializer, TransactionSerializer, ProjectSerializer,
@@ -7,8 +8,15 @@ from .serializers import (
 )
 
 class EmployeeViewSet(viewsets.ViewSet):
+    pagination_class = PageNumberPagination
+    
     def list(self, request):
         employees = Employee.objects.all()
+        paginator = self.pagination_class()
+        page = paginator.paginate_queryset([e for e in employees], request)
+        if page is not None:
+            serializer = EmployeeSerializer(page, many=True)
+            return paginator.get_paginated_response(serializer.data)
         serializer = EmployeeSerializer([e for e in employees], many=True)
         return Response(serializer.data)
 
