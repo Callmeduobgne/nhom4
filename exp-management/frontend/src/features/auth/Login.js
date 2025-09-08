@@ -1,8 +1,8 @@
 import React from 'react';
-import { Form, Input, Button, Card, message } from 'antd';
-import { UserOutlined, LockOutlined } from '@ant-design/icons';
+import { Form, Input, Button, Card, message, Alert, Space } from 'antd';
+import { UserOutlined, LockOutlined, InfoCircleOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../../contexts/AuthContext';
 
 const Login = () => {
     const navigate = useNavigate();
@@ -29,22 +29,41 @@ const Login = () => {
         }}>
             <Card
                 style={{
-                    width: 400,
+                    width: 450,
                     padding: '24px',
                     borderRadius: '12px',
                     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)'
                 }}
                 title={
                     <div style={{ textAlign: 'center', fontSize: '24px', fontWeight: 'bold' }}>
-                        Đăng nhập
+                        🏢 EXP Management
                     </div>
                 }
             >
+                {/* Demo Account Info */}
+                <Alert
+                    message="Tài khoản Demo"
+                    description={
+                        <Space direction="vertical" size="small" style={{ width: '100%' }}>
+                            <div><strong>Admin:</strong> admin / admin123</div>
+                            <div><strong>User:</strong> demo / demo123</div>
+                        </Space>
+                    }
+                    type="info"
+                    showIcon
+                    icon={<InfoCircleOutlined />}
+                    style={{ marginBottom: '24px' }}
+                />
+
                 <Form
                     name="login"
                     onFinish={onFinish}
                     layout="vertical"
                     size="large"
+                    initialValues={{
+                        username: 'admin',
+                        password: 'admin123'
+                    }}
                 >
                     <Form.Item
                         name="username"

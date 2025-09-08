@@ -1,7 +1,7 @@
 import React from 'react';
 import { Form, Input, InputNumber, Select } from 'antd';
-import CrudTable from '../components/CrudTable';
-import useApiData from '../hooks/useApiData';
+import CrudTable from '../../shared/components/organisms/CrudTable';
+import useApiData from '../../shared/hooks/useApiData';
 
 const { Option } = Select;
 

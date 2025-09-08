@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Layout, Menu, Avatar, Typography, Divider, Button } from 'antd';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../../../contexts/AuthContext';
 import {
     DashboardOutlined,
     TeamOutlined,

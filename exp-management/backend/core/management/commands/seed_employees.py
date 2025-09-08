@@ -40,17 +40,17 @@ class Command(BaseCommand):
         ]
 
         # Delete existing employees
-        Employee.objects.all().delete()
+        Employee.drop_collection()
         self.stdout.write('Deleted existing employees')
 
         # Create new employees
         for data in employees_data:
-            Employee.objects.create(
+            employee = Employee(
                 name=data["name"],
                 email=data["email"],
                 position=data["position"],
-                department=data["department"],
-                created_at=datetime.utcnow()
+                department=data["department"]
             )
+            employee.save()
 
         self.stdout.write(self.style.SUCCESS(f'Successfully created {len(employees_data)} employees'))

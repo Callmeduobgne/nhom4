@@ -2,17 +2,18 @@ import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Layout, ConfigProvider } from 'antd';
 import { AuthProvider } from './contexts/AuthContext';
-import PrivateRoute from './components/PrivateRoute';
-import Login from './pages/Login';
-import Sidebar from './components/Sidebar';
-const Dashboard = lazy(() => import('./pages/Dashboard'));
-const HR = lazy(() => import('./pages/HR'));
-const Finance = lazy(() => import('./pages/Finance'));
-const Projects = lazy(() => import('./pages/Projects'));
-const CRM = lazy(() => import('./pages/CRM'));
-const Assets = lazy(() => import('./pages/Assets'));
+import { PrivateRoute, Login } from './features/auth';
+import { Sidebar } from './shared/components';
 import 'antd/dist/reset.css';
 import './App.css';
+
+// Lazy load features
+const Dashboard = lazy(() => import('./features/dashboard/Dashboard'));
+const HR = lazy(() => import('./features/hr/HR'));
+const Finance = lazy(() => import('./features/finance/Finance'));
+const Projects = lazy(() => import('./features/projects/Projects'));
+const CRM = lazy(() => import('./features/crm/CRM'));
+const Assets = lazy(() => import('./features/assets/Assets'));
 
 const { Content } = Layout;
 

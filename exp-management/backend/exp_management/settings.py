@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
+    'mongoengine',
     'core',
 ]
 
@@ -59,9 +60,29 @@ WSGI_APPLICATION = 'exp_management.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'NAME': ':memory:',  # In-memory database for Django admin
     }
 }
+
+# MongoDB configuration with MongoEngine
+import mongoengine
+
+MONGODB_SETTINGS = {
+    'db': os.getenv('MONGO_DB_NAME', 'exp_management'),
+    'host': os.getenv('MONGO_HOST', 'mongodb'),
+    'port': int(os.getenv('MONGO_PORT', '27017')),
+    'username': os.getenv('MONGO_USER', ''),
+    'password': os.getenv('MONGO_PASSWORD', ''),
+    'authentication_source': os.getenv('MONGO_AUTH_SOURCE', 'admin'),
+    'connect': False,  # Don't connect on import
+}
+
+# Configure MongoEngine connection
+try:
+    mongoengine.connect(**MONGODB_SETTINGS)
+    print("Successfully connected to MongoDB")
+except Exception as e:
+    print(f"MongoDB connection error: {e}")
 
 AUTH_PASSWORD_VALIDATORS = [
     {

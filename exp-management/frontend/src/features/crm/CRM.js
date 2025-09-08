@@ -1,47 +1,42 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Modal, Form, Input, Select, DatePicker, Space, Progress } from 'antd';
+import { Table, Button, Modal, Form, Input, Select, Space } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import api from '../services/api';
+import api from '../../utils/services/api';
 
 const { Option } = Select;
 
-function Projects() {
-    const [projects, setProjects] = useState([]);
+function CRM() {
+    const [customers, setCustomers] = useState([]);
     const [visible, setVisible] = useState(false);
     const [form] = Form.useForm();
     const [editId, setEditId] = useState(null);
 
     useEffect(() => {
-        fetchProjects();
+        fetchCustomers();
     }, []);
 
-    const fetchProjects = async () => {
+    const fetchCustomers = async () => {
         try {
-            const response = await api.get('/projects/');
-            setProjects(response);
+            const response = await api.get('/customers/');
+            setCustomers(response);
         } catch (error) {
-            console.error('Error fetching projects:', error);
+            console.error('Error fetching customers:', error);
         }
     };
 
     const handleSubmit = async (values) => {
         try {
-            const data = {
-                ...values,
-                start_date: values.start_date?.format('YYYY-MM-DD'),
-                end_date: values.end_date?.format('YYYY-MM-DD')
-            };
             if (editId) {
-                await api.put(`/projects/${editId}/`, data);
+                await api.put(`/customers/${editId}/`, values);
             } else {
-                await api.post('/projects/', data);
+                await api.post('/customers/', values);
             }
             setVisible(false);
             form.resetFields();
             setEditId(null);
-            fetchProjects();
+            fetchCustomers();
         } catch (error) {
-            console.error('Error saving project:', error);
+            console.error('Error saving customer:', error);
         }
     };
 
@@ -53,25 +48,19 @@ function Projects() {
 
     const handleDelete = async (id) => {
         try {
-            await api.delete(`/projects/${id}/`);
-            fetchProjects();
+            await api.delete(`/customers/${id}/`);
+            fetchCustomers();
         } catch (error) {
-            console.error('Error deleting project:', error);
+            console.error('Error deleting customer:', error);
         }
     };
 
     const columns = [
         { title: 'Name', dataIndex: 'name', key: 'name' },
-        { title: 'Client', dataIndex: 'client', key: 'client' },
+        { title: 'Email', dataIndex: 'email', key: 'email' },
+        { title: 'Phone', dataIndex: 'phone', key: 'phone' },
+        { title: 'Company', dataIndex: 'company', key: 'company' },
         { title: 'Status', dataIndex: 'status', key: 'status' },
-        { title: 'Start Date', dataIndex: 'start_date', key: 'start_date' },
-        { title: 'End Date', dataIndex: 'end_date', key: 'end_date' },
-        {
-            title: 'Progress',
-            dataIndex: 'progress',
-            key: 'progress',
-            render: (progress) => <Progress percent={progress} size="small" />
-        },
         {
             title: 'Actions',
             key: 'actions',
@@ -88,12 +77,12 @@ function Projects() {
         <div>
             <div style={{ marginBottom: 16 }}>
                 <Button type="primary" icon={<PlusOutlined />} onClick={() => setVisible(true)}>
-                    Add Project
+                    Add Customer
                 </Button>
             </div>
-            <Table columns={columns} dataSource={projects} rowKey="id" />
+            <Table columns={columns} dataSource={customers} rowKey="id" />
             <Modal
-                title={editId ? 'Edit Project' : 'Add Project'}
+                title={editId ? 'Edit Customer' : 'Add Customer'}
                 open={visible}
                 onCancel={() => {
                     setVisible(false);
@@ -106,25 +95,22 @@ function Projects() {
                     <Form.Item name="name" label="Name" rules={[{ required: true }]}>
                         <Input />
                     </Form.Item>
-                    <Form.Item name="description" label="Description">
-                        <Input.TextArea />
+                    <Form.Item name="email" label="Email" rules={[{ required: true, type: 'email' }]}>
+                        <Input />
                     </Form.Item>
-                    <Form.Item name="client" label="Client" rules={[{ required: true }]}>
+                    <Form.Item name="phone" label="Phone">
+                        <Input />
+                    </Form.Item>
+                    <Form.Item name="company" label="Company">
                         <Input />
                     </Form.Item>
                     <Form.Item name="status" label="Status" rules={[{ required: true }]}>
                         <Select>
-                            <Option value="planning">Planning</Option>
-                            <Option value="active">Active</Option>
-                            <Option value="completed">Completed</Option>
-                            <Option value="cancelled">Cancelled</Option>
+                            <Option value="lead">Lead</Option>
+                            <Option value="prospect">Prospect</Option>
+                            <Option value="customer">Customer</Option>
+                            <Option value="inactive">Inactive</Option>
                         </Select>
-                    </Form.Item>
-                    <Form.Item name="start_date" label="Start Date">
-                        <DatePicker style={{ width: '100%' }} />
-                    </Form.Item>
-                    <Form.Item name="end_date" label="End Date">
-                        <DatePicker style={{ width: '100%' }} />
                     </Form.Item>
                     <Form.Item>
                         <Button type="primary" htmlType="submit">
@@ -137,4 +123,4 @@ function Projects() {
     );
 }
 
-export default Projects;
+export default CRM;

@@ -1,5 +1,5 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import api from '../services/api';
+import React, { createContext, useState, useContext } from 'react';
+import api from '../utils/services/api';
 
 const AuthContext = createContext(null);
 
@@ -12,6 +12,7 @@ export const AuthProvider = ({ children }) => {
 
     const login = async (username, password) => {
         setLoading(true);
+        
         try {
             const response = await api.post('/auth/login/', {
                 username,
@@ -23,19 +24,26 @@ export const AuthProvider = ({ children }) => {
                     username,
                     access: response.access,
                     refresh: response.refresh,
-                    role: 'admin' // Default role, could be extracted from JWT
+                    role: response.role || 'user',
+                    name: response.name || username,
+                    email: response.email || `${username}@company.com`
                 };
+                
                 setUser(userData);
                 localStorage.setItem('user', JSON.stringify(userData));
                 localStorage.setItem('access_token', response.access);
                 localStorage.setItem('refresh_token', response.refresh);
+                
+                setLoading(false);
                 return { success: true };
             }
-        } catch (error) {
-            console.error('Login error:', error);
-            return { success: false, error: 'Đăng nhập thất bại' };
-        } finally {
+            
             setLoading(false);
+            return { success: false, error: 'Invalid credentials' };
+            
+        } catch (error) {
+            setLoading(false);
+            return { success: false, error: error.message || 'Login failed' };
         }
     };
 
@@ -63,7 +71,7 @@ export const AuthProvider = ({ children }) => {
                 return true;
             }
         } catch (error) {
-            console.error('Token refresh failed:', error);
+            // Silent error handling - log to monitoring service in production
             logout();
             return false;
         }

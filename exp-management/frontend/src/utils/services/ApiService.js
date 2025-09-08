@@ -12,6 +12,7 @@ class ApiService {
                 'Content-Type': 'application/json',
                 ...(token && { 'Authorization': `Bearer ${token}` })
             },
+            timeout: 8000,
             ...options
         };
 
@@ -19,19 +20,26 @@ class ApiService {
             config.body = JSON.stringify(config.body);
         }
 
-        const response = await fetch(url, config);
-        if (!response.ok) {
-            const error = new Error(`HTTP error! status: ${response.status}`);
-            error.status = response.status;
+        try {
+            const response = await fetch(url, config);
+            if (!response.ok) {
+                const error = new Error(`HTTP error! status: ${response.status}`);
+                error.status = response.status;
+                throw error;
+            }
+            return await this.handleResponse(response);
+        } catch (error) {
+            console.error(`API Error on ${endpoint}:`, error);
             throw error;
         }
+    }
 
-        // Handle no-content responses safely
+    async handleResponse(response) {
+
         if (response.status === 204 || response.status === 205) {
             return null;
         }
 
-        // Some endpoints may return empty body with 200
         const contentType = response.headers.get('content-type') || '';
         if (contentType.includes('application/json')) {
             const text = await response.text();
@@ -43,9 +51,7 @@ class ApiService {
             }
         }
 
-        // Fallback to text for non-JSON
-        const fallbackText = await response.text();
-        return fallbackText || null;
+        return await response.text() || null;
     }
 
     get(endpoint) {
